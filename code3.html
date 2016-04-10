@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ThreeJS</title>
+    <script type="text/javascript" src="./js/three.js"></script>
+    <script type="text/javascript" src="./js/Stats.js"></script>
+
+
+</head>
+<body>
+<script type="text/javascript">
+    /**
+     *
+     * setClearColorHex 和 setClearColor
+     *
+     */
+    var scene = new THREE.Scene();			 				// create scene
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 5 , 1000 );//创建相机
+    var renderer = new THREE.WebGLRenderer();				// create render
+    renderer.setClearColor(0x000000);		 				// renderer background color
+    renderer.setSize(window.innerWidth,window.innerHeight);	// renderer size
+    document.body.appendChild(renderer.domElement);			// transform canvas add to the <body>
+    var geometry = new THREE.CubeGeometry(2,2,2);
+    var material = new THREE.MeshBasicMaterial({color:0xf7380d});
+    var objectTotal = new THREE.Object3D();
+    var cube = new THREE.Mesh(geometry,material);
+    var axisHelper = new THREE.AxisHelper(4);
+
+    scene.add(cube);
+    camera.position.z = 10;
+    objectTotal.add(axisHelper);
+    function render(){
+        requestAnimationFrame(render);
+        cube.rotation.y += 0.01;
+        objectTotal.rotation.y += 0.01;
+        //axisHelper.rotation.y += 0.01;
+        renderer.render(scene,camera)
+    }
+    render();
+    scene.add(axisHelper);
+
+
+</script>
+</body>
+</html>

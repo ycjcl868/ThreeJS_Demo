@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ThreeJS让场景动起来的两种方法</title>
+
+    <script>
+        /**
+         * 变化的物体
+         * 变化的相机
+         * fps(Frames Per Second):视频或者动画每秒显示多少帧数
+         * 理论上，3D程序最大的帧数是显卡支持的刷新率
+         * 一般是60
+         * stat 一个监控程序 帧数、每帧时间、内存使用量的JS库
+         * tween.js 一个动画库
+         */
+        //渲染循环
+        function animate(){
+            render();
+            requestAnimationFrame(animate);
+        }
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ThreeJS</title>
+	<script type="text/javascript" src="./js/three.js"></script>
+	<script type="text/javascript" src="./js/Stats.js"></script>
+	<script type="text/javascript" src="./js/tween.min.js"></script>
+
+
+</head>
+<body>
+	<script type="text/javascript">
+		/**
+		 *
+		 * setClearColorHex 和 setClearColor
+		 *
+         */
+		var scene = new THREE.Scene();			 				// create scene
+		var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 5 , 1000 );//创建相机
+		var renderer = new THREE.WebGLRenderer();				// create render
+		var stats = new Stats();
+		stats.domElement.style.position = "absolute";
+		stats.domElement.style.left = "0px";
+		stats.domElement.style.top = "0px";
+		document.body.appendChild(stats.domElement);
+
+
+		renderer.setClearColor(0x000000);		 				// renderer background color
+		renderer.setSize(window.innerWidth,window.innerHeight);	// renderer size
+		document.body.appendChild(renderer.domElement);			// transform canvas add to the <body>
+		var geometry = new THREE.CubeGeometry(2,2,2);
+		var material = new THREE.MeshBasicMaterial({color:0xf7380d});
+		var cube = new THREE.Mesh(geometry,material);			//
+		scene.add(cube);
+		camera.position.z = 10;
+		new TWEEN.Tween(cube.position).to({x:10},1000).repeat(1).start();
+		function render(){
+			stats.begin();
+			requestAnimationFrame(render);
+/*			cube.rotation.y += 0.01;
+			cube.rotation.x += 0.01;
+			cube.rotation.z += 0.01;*/
+			renderer.render(scene,camera);
+			TWEEN.update();
+			stats.end();
+		}
+		render();
+
+
+	</script>
+</body>
+</html>
