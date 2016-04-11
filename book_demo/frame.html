@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ThreeJS框架</title>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/jquery.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <style>
+        body{
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="WebGL-output"></div>
+
+<script>
+    /**
+     * scene(场景):是一个容器
+     * camera(相机)
+     * renderer(渲染器)
+     */
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+    var renderer = new THREE.WebGLRenderer();
+    var stats = initStats();
+    var axes = new THREE.AxisHelper(20);//坐标轴对象
+
+    var planeGeometry = new THREE.PlaneGeometry(60,20,1,1);//创建平面
+    var planeMaterial = new THREE.MeshBasicMaterial({
+        color:0xcccccc
+    });
+    var plane = new THREE.Mesh(planeGeometry,planeMaterial);//Mesh网格
+
+    var cubeGeometry = new THREE.CubeGeometry(4,4,4);
+    var cubeMaterial = new THREE.MeshPhongMaterial({
+        color:0xff0000
+        //wireframe:true
+    });
+    var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);//正方体
+
+    var sphereGeometry = new THREE.SphereGeometry(4,20,20);
+    var sphereMaterial = new THREE.MeshPhongMaterial({
+        color:0x7777ff
+        //wireframe:true
+    });
+    var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);//球体
+    var spotLight = new THREE.SpotLight(0xffffff);//灯光
+    $(function(){
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        stats.domElement.style.left = '0px';
+        document.body.appendChild(stats.domElement);
+
+        renderer.setClearColor(0xEEEEEE);//背景色
+        renderer.setSize(window.innerWidth,window.innerHeight);//渲染成多大尺寸
+        renderer.shadowMapEnabled = true;//开启阴影
+
+
+        scene.add(axes);
+
+
+        plane.rotation.x = -0.5*Math.PI;
+        plane.position.x = 15;
+        plane.position.y = 0;
+        plane.position.z = 0;
+        plane.receiveShadow = true;//阴影
+        scene.add(plane);
+
+
+        cube.position.x = -1;
+        cube.position.y = 3;
+        cube.position.z = 0;
+        cube.castShadow = true;
+        scene.add(cube);
+
+        sphere.position.x = 20;
+        sphere.position.y = 2;
+        sphere.position.z = 2;
+        sphere.castShadow = true;
+        scene.add(sphere);
+
+        //添加灯光，直接写是没有任何效果的。因为材质对光源的反应并不相同，要改变材质不能使用
+        //MeshBasicMaterial()->MeshLambertMaterial和MeshPhongMaterial
+
+        spotLight.position.set(-40,60,-10);
+        spotLight.castShadow = true;
+        scene.add(spotLight);
+
+
+        camera.position.x = -50;
+        camera.position.y = 50;
+        camera.position.z = 50;
+        camera.lookAt(scene.position);
+
+
+        $("#WebGL-output").append(renderer.domElement);
+        animate();
+
+
+    });
+    function initStats(){
+        var stats = new Stats();
+        stats.setMode(0);//若为0，是FPS。1是渲染时间
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+        return stats;
+    }
+    var step = 0;
+    var flag = 0;//0代表下，1代表上
+    function animate(){
+        stats.begin();
+        requestAnimationFrame(animate);
+
+/*      向前跳动画
+        step += 0.04;
+        sphere.position.x = 20+(10*(Math.cos(step)));
+        sphere.position.y = 2+(10*Math.abs(Math.sin(step)));
+*/
+
+       if(flag == 0){     //向下  0.84
+            step = Math.abs(step + 0.04);
+           sphere.position.y = sphere.position.y - step;
+           if(sphere.position.y <= 2){
+               flag = 1;
+           }
+       }else if(flag == 1){ //向上
+            step = Math.abs(step - 0.04);
+           sphere.position.y = sphere.position.y + step;
+           if(sphere.position.y >= 8){
+               flag = 0;
+           }
+
+        }
+
+
+
+
+
+
+
+
+        //场景移动
+        scene.rotation.y += 0.01;
+        if(scene.position.z>7){
+            scene.position.z -= 0.02
+        }else if(scene.position.z<=7){
+            scene.position.z += 0.01;
+        }
+        renderer.render(scene,camera);
+        stats.end();
+    }
+
+
+</script>
+
+</body>
+</html>

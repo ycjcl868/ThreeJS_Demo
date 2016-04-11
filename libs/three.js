@@ -24041,7 +24041,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		} else {
 
-			// regular Texture (image, video, canvas)
+			// regular Texture (image, video_demo, canvas)
 
 			// use manually created mipmaps if available
 			// if there are no manual mipmaps
