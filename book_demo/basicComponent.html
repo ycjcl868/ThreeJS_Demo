@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ThreeJS基础组件</title>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/jquery.js"></script>
+    <script>
+        /**
+         *
+         * http://www.hewebgl.com/article/getarticle/126    加载3D模型
+         * 显示任何东西需要的组件：
+         * 相机：决定哪些东西将要在屏幕上渲染
+         * 光源：它们会对材质如何显示，以及生成阴影时材质如何使用
+         * 物体：它们是在相机透视图里主要的渲染对象：方块、球体等
+         */
+        //场景属性
+        /**
+         *
+         * Scene.Add()添加物体
+         * Scene.Remove()移除物体
+         * Scene.children获取场景中所有子对象的列表
+         * Scene.getChildByName()利用name属性，获取场景中某个特定的物体
+         * Scene.traverse(function(e){
+            //相当于遍历了场景对象
+            if(e instanceof THREE.Mesh && e != plane){
+
+            }
+           });
+         *
+         */
+        var scene = new THREE.Scene();//创建场景，相当于容器
+
+        //相机属性
+        var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);//透视相机
+
+
+        //平面属性
+        var planeGeometry = new THREE.PlaneGeometry(60,40,1,1);
+        var planeMaterial = new THREE.MeshLambertMaterial({color:0xcccccc});
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+
+        //灯光属性
+        var ambientLight = new THREE.AmbientLight(0x0c0c0c);
+
+        //点光源属性
+        var spotLight = new THREE.SpotLight(0xffffff);
+
+        //渲染器属性
+        var renderer = new THREE.WebGLRenderer();
+
+        //geometry对象
+        var geom = new THREE.Geometry();
+        var vertices = [
+                new THREE.Vector3(1,3,1),
+                new THREE.Vector3(1,3,-1),
+                new THREE.Vector3(1,-1,1),
+                new THREE.Vector3(1,-1,-1),
+                new THREE.Vector3(-1,3,-1),
+                new THREE.Vector3(-1,3,1),
+                new THREE.Vector3(-1,-1,-1),
+                new THREE.Vector3(-1,-1,1)
+        ];
+
+
+        $(function(){
+            spotLight.position.set(-40,60,-10);   //相当于   position.x   position.y   position.z
+            spotLight.position = new THREE.Vector3(10,3,1);
+
+            //添加雾
+            //scene.fog = new THREE.Fog(0xffffff,0.1,1000);
+            scene.fog = new THREE.FogExp2(0xffffff,0.01);
+
+            //强制所有物体使用相同的材质
+            scene.overrideMaterial = new THREE.MeshLambertMaterial({color:0xffffff});
+
+            geom.vertices = vertices;
+            geometry.computeCentroids();
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+            geometry.computeBoundingSphere();
+
+
+
+
+            scene.add(plane);//添加平面
+            scene.add(ambientLight);//添加全局灯光
+            scene.add(spotLight);//添加点光源
+
+            plane.rotation.x = -0.5*Math.PI;
+            plane.position.x = 15;
+            plane.position.y = 0;
+            plane.position.z = 0;
+
+            camera.position.x = 50;
+            camera.position.y = 50;
+            camera.position.z = 80;
+            camera.lookAt(scene.position);      //lookAt 是在指定点上聚焦
+
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            renderer.setClearColor(0xffffff);
+
+
+
+            $("body").append(renderer.domElement);
+            renderer.render(scene,camera);
+
+
+
+        })
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

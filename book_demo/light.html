@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ThreeJS光线</title>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/jquery.js"></script>
+    <script>
+        /**
+         *  AmbientLight : 环境光(影响整个场景的光源)
+         *  PointLight: 点光源
+         *  SpotLight: 聚光灯光源  （照亮物体，并生成阴影）
+         *  DirectionalLiight: 方向光
+         *  HemisphereLight: 半球光
+         *  AreaLight: 面光源
+         *  LenFlare: 镜头眩光
+         *
+         *  使用THREE.WebGLDeferedRenderer对象处理复杂光照，但需要加入一些script
+         *  WebGLDeferredRenderer.js  ShaderDeferred.js  RenderPass.js EffectComposer.js   CopyShader.js   ShaderPass.js  FXAAShader.js
+         *
+         *  var renderer = new WebGLDeferredRenderer({
+         *      width: window.innerWidth,
+         *      height: window.innerHeight,
+         *      scale: 1,
+         *      antialias: true,
+         *      tonemapping: THREE.FilmicOperator,brightness:2.5
+         *  })
+         *
+         *
+         */
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+        //AmbientLight光源
+        var ambiColor = '#0c0c0c';
+        var ambientLight = new THREE.AmbientLight(ambiColor);
+        //spotLight聚光光源
+        var spotLight = new THREE.SpotLight(0xffffff);
+        //点光源
+        var pointLight = new THREE.PointLight("#ccffcc");
+
+        var renderer = new THREE.WebGLRenderer();
+        var planeGeometry = new THREE.PlaneGeometry(60,40,1,1);
+        var planeMaterial = new THREE.MeshBasicMaterial({color:0xcccccc});
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+
+
+        var group = new THREE.Mesh();
+        var mats  = [];
+        mats.push(new THREE.MeshBasicMaterial({color:0x009e60}));
+        mats.push(new THREE.MeshBasicMaterial({color:0x0051ba}));
+        mats.push(new THREE.MeshBasicMaterial({color:0xffd500}));
+        mats.push(new THREE.MeshBasicMaterial({color:0xff5800}));
+        mats.push(new THREE.MeshBasicMaterial({color:0xc41e3a}));
+        mats.push(new THREE.MeshBasicMaterial({color:0xffffff}));
+
+        var faceMaterial = new THREE.MeshFaceMaterial(mats);
+
+        var controls = new function(){
+            this.ambientColor = ambiColor;
+        };
+
+        $(function(){
+            spotLight.position.set(-40,60,-10);
+
+            pointLight.distance = 100;  //光源照射距离
+            pointLight.intensity = 2.4; //光源亮度
+            pointLight.position.set(-40,60,-10);//位置
+            pointLight.castShadow = true;//投影
+            pointLight.target = plane;//光照的方向
+
+            /*  如果想指向空间的任意一点
+            var target = new THREE.Object3D();
+            target.position = new THREE.Vector3(5,0,0);
+            spotLight.target = target;
+            */
+
+            /*
+            自定义着色器
+            THREE.ShaderMaterial()是功能最丰富、最复杂的一种材质
+            wireframe: 线框
+            vertexColors:
+
+             */
+
+            for(var x = 0;x < 3;x++){
+                for(var y = 0;y<3;y++){
+                    for(var z = 0;z<3;z++){
+                        var cubeGeom = new THREE.CubeGeometry(10,10,10);//width  height depth
+                        var cube = new THREE.Mesh(cubeGeom,faceMaterial);
+                        cube.position = new THREE.Vector3(x*3-3,y*3,z*3-3);
+                        group.add(cube);
+                    }
+                }
+            }
+
+
+
+
+            scene.add(plane);
+            scene.add(spotLight);
+            scene.add(pointLight);
+            plane.position.set(-3,-3,-3);
+            plane.rotation.x = -0.5*Math.PI;
+            camera.position.set(50,50,80);
+            camera.lookAt(scene.position);
+
+            scene.add(ambientLight);
+
+            scene.add(group);
+
+
+
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            renderer.setClearColor(0xffffff);
+
+            $("body").append(renderer.domElement);
+            render();
+
+
+
+        });
+
+        function render(){
+            var step = 0.1;
+            group.rotation.y += step;
+            requestAnimationFrame(render);
+            renderer.render(scene,camera);
+            step=step+0.01;
+        }
+
+        function createMaterial(vertexShader,fragmentShader){
+            var vertShader = document.getElementById(vertexShader).innerHTML;
+            var fragShader = document.getElementById(fragmentShader).innerHTML;
+            var attributes = {};
+            //自定义着色器
+            var uniforms = {    //向着色器发信息
+                time:{type:'f',value:0.2},
+                scale:{type:'f',value:0.2},
+                alpha:{type:'f',value:0.6},
+                resolution:{type:"v2",value:new THREE.Vector2()}
+            };
+
+            uniforms.resolution.value.x = window.innerWidth;
+            uniforms.resolution.value.y = window.innerHeight;
+            var meshMaterial = new THREE.ShaderMaterial({
+                uniforms:uniforms,
+                attributes:attributes,
+                vertexShader:vertexShader,  //顶点的位置
+                fragmentShader:fragShader,  //每一个传入的像素的颜色
+                transparent:true
+            });
+            return meshMaterial;
+        }
+
+    </script>
+
+</head>
+<body>
+
+
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>加上dat.GUI属性</title>
+    <title>Geometry</title>
     <script src="../libs/three.js"></script>
     <script src="../libs/effects/AsciiEffect.js"></script>
     <script src="../libs/jquery.js"></script>
@@ -16,9 +16,35 @@
     </style>
 </head>
 <body>
-<div id="WebGL-output"></div>
 
+<div id="WebGL-output"></div>
 <script>
+    /**
+     *涉及的几何体有：
+     * PlaneGeometry(平面)
+     * CircleGeometry(圆形)
+     * ShapeGeometry(塑形)   自定义形状
+     * CubeGeometry(立方体)
+     * SphereGeometry(球体)
+     * CylinderGeometry(圆柱)
+     * TorusGeometry(圆环)
+     * TorusKnotGeometry(环面纽结)
+     * PolyhedronGeometry(多面体)
+     * IcosahedronGeometry(二十面体)
+     * OctahedronGeometry(八面体)
+     * TetraHedronGeometry(四面体)
+     * ConvexGeometry(凸面体)
+     * LatheGeometry(扫描面)
+     * ExtrudeGeometry(拉伸几何体)
+     * TubeGeometry(管状体)
+     * ParametricGeometry(参数几何体)
+     * TextGeometry(文本几何体)
+     *
+     *
+     * 拉伸二维图形成三维
+     * new THREE.ExtrudeGeometry()
+     */
+
     /**
      * scene(场景):是一个容器
      * camera(相机)
@@ -30,11 +56,42 @@
     var stats = initStats();
     var axes = new THREE.AxisHelper(20);//坐标轴对象
 
-    var planeGeometry = new THREE.PlaneGeometry(60,20,1,1);//创建平面
+    var planeGeometry = new THREE.PlaneGeometry(60,20,5,5);//创建平面   (width,height,widthSegments,heightSegments)  段数
     var planeMaterial = new THREE.MeshBasicMaterial({
         color:0xcccccc
     });
     var plane = new THREE.Mesh(planeGeometry,planeMaterial);//Mesh网格
+
+    var circleGeometry  = new THREE.CircleGeometry(10,10,0,Math.PI);
+    var circleMaterial = new THREE.MeshBasicMaterial({
+        color:0x000000
+    });
+    var circle = new THREE.Mesh(circleGeometry,circleMaterial);
+
+
+    //圆环，甜甜圈
+    var torusGeometry = new THREE.TorusGeometry(5,1,16,100); //(radius,tube,radialSegments,tubularSegments,arc)
+    var torusMaterial = new THREE.MeshBasicMaterial({
+        color:0x0e2d22a
+    });
+    var torus = new THREE.Mesh(torusGeometry,torusMaterial);
+
+    //多面体
+    var vertices = [
+            [1,0,1],
+            [1,0,-1],
+            [-1,0,-1],
+            [-1,0,1],
+            [0,1,0]
+    ];
+    var faces = [
+            [0,1,2,3],
+            [0,1,4],
+            [1,2,4],
+            [2,3,4],
+            [3,0,4]
+    ];
+
 
     var cubeGeometry = new THREE.CubeGeometry(4,4,4);
     var cubeMaterial = new THREE.MeshPhongMaterial({
@@ -81,8 +138,15 @@
         renderer.setSize(window.innerWidth,window.innerHeight);//渲染成多大尺寸
         renderer.shadowMapEnabled = true;//开启阴影
 
-
         scene.add(axes);
+
+        torus.position.set(0,10,0);
+        scene.add(torus);
+
+        circle.position.set(20,0,0);
+        circle.rotation.x = -Math.PI/2;
+        scene.add(circle);
+
 
 
         plane.rotation.x = -0.5*Math.PI;
@@ -166,8 +230,6 @@
             }
 
         }
-
-
         //场景移动
         scene.rotation.y += 0.01;
         if(scene.position.z>7){
@@ -179,9 +241,37 @@
         stats.end();
     }
 
+    function drawShape(){
+        //create a basic shape
+        var shape = new THREE.Shape();
+        shape.moveTo(10,10);// 开始点
+        shape.lineTo(10,40);// 经过点
+        shape.bezierCurveTo(15,25,25,25,30,40);  //贝塞尔曲线(aCPx1,aCPy1,aCPx2,aCPy2,x,y)
+        shape.splineThru([                  //绘制光滑的曲线,数组
+                new THREE.Vector2(32,30),
+                new THREE.Vector2(28,20),
+                new THREE.Vector2(30,10)
+        ]);
+
+        shape.quadraticCurveTo(20,15,10,10);  //二次曲线(aCPx,aCPy,x,y)
+
+        var hole1 = new THREE.Path();
+        hole1.absellipse(16,24,2,3,0,Math.PI*2,true);   //
+        shape.holes.push(hole1);
+
+        var hole2 = new THREE.Path();
+        hole2.absellipse(23,24,2,3,0,Math.PI*2,true);
+        shape.holes.push(hole2);
+
+        var hole3 = new THREE.Path();
+        hole3.absarc(20,16,2,0,Math.PI,true);
+        shape.holes.push(hole3);
+
+        return shape;
+
+    }
+
 
 </script>
-
 </body>
 </html>
-
