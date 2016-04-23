@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>创建动画和移动相机</title>
+    <script type="text/javascript" src="../libs/three.js"></script>
+    <script type="text/javascript" src="../libs/SceneExporter.js"></script>
+    <script type="text/javascript" src="../libs/jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="../libs/stats.js"></script>
+    <script type="text/javascript" src="../libs/dat.gui.js"></script>
+</head>
+<body>
+<script>
+    /**
+     *  补充下选择对象
+     */
+    var projector = new THREE.Projector();
+    function onDocumentMouseDown(event){
+        event.preventDefault();
+        var vector = new THREE.Vector3(
+                (event.clientX/window.innerWidth)*2-1,
+                -(event.clientY/window.innerHeight)*2+1,
+                0.5);
+        projector.unprojectVector(vector,camera);
+        var raycaster = new THREE.Raycaster(camera.position,vector.sub(camera.position).normalize());
+        var intersects = raycaster.intersectObjects([sphere,cylinder,cube]);
+        if(intersects.length>0){
+            intersects[0].object.material.transparent = true;
+            intersects[0].object.material.opacity = 0.1;
+        }
+    }
+    
+
+</script>
+</body>
+</html>

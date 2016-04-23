@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>粒子和粒子系统</title>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/effects/AsciiEffect.js"></script>
+    <script src="../libs/jquery.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+</head>
+<body>
+
+
+<script>
+    /**
+     *
+     */
+
+
+    //创建粒子，使用CanvasRenderer
+    function createParticles(){
+        var material = new THREE.ParticleBasicMaterial();
+        for(var i = 0;i<5;i++){
+            for(var j=0;j<5;j++){
+                var particle = new THREE.Particle(material);
+                particle.position.set(x*10,y*10,0);
+                scene.add(particle);
+            }
+        }
+    }
+
+    //使用WebGLRenderer
+    function createParticles1(){
+        var geom = new THREE.Geometry();
+        var material = new THREE.ParticleBasicMaterial({
+            size:4,
+            vertexColors:true,
+            color:0xffffff
+        });
+        for(var x = -5;x<5;x++){
+            for(var y = -5;y<5;y++){
+                var particle = new THREE.Vector3(x*10,y*10,0);
+                geom.vertices.push(particle);
+                geom.colors.push(
+                        new THREE.Color(Math.random()*0x00ffff)
+                );
+            }
+        }
+        var system = new THREE.ParticleSystem(geom,material);
+        scene.add(system);
+    }
+
+    //创建精灵
+    function createSprite(size,transparent,opacity,color,spriteNumber,range){
+        var spriteMaterial = new THREE.SpriteMaterial({
+            opacity:opacity,
+            color:color,
+            transparent:transparent,
+            useScreenCoordinates:false,
+            sizeAttenuation:true,
+            map:getTexture()
+        });
+
+        //we havae one row , with five sprites
+        spriteMaterial.uvOffset.set(1/5*spriteNumber,0);
+        spriteMaterial.uvScale.set(1/5,1);
+        spriteMaterial.alignment = THREE.SpriteAlignment.bottomCenter;
+    }
+
+    //轻松渲染大量物体
+    var geometry = new THREE.Geometry();
+    for(var i = 0;i<controls.numberOfObjects;i++){
+        THREE.GeometryUtils.merge(geometry,addCube());
+    }
+    scene.add(new THREE.Mesh(geometry,cubeMaterial));
+</script>
+</body>
+</html>

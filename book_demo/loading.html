@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>加载几何体</title>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/GeometryExporter.js"></script>
+    <script src="../libs/SceneExporter.js"></script>
+    <script src="../libs/jquery.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+
+</head>
+<body>
+
+<script>
+    /**
+     * 从外部资源中加载几何体:
+     * JSON、OBJ、MTL、Collada、STL、CTM、VTK、PDB、PLY
+     *
+     * Blender(www.blender.org)：一个导出器将文件导出成Three.js的JSON格式
+     */
+
+    //导出，但只能导出几何体，如果想保存整个场景。用SceneExporter()对象
+    var exporter = new THREE.GeometryExporter();
+    var result = exporter.parse(knot.geometry);
+    localStorage.setItem("json",JSON.stringify(result));
+
+    //导入
+    var json = localStorage.getItem("json");
+    if(json){
+        var loadedGeometry = JSON.parse(json);
+        var loader = new THREE.JSONLoader();//加载器
+        var geom = loader.parse(loadedGeometry);
+        loadedMesh = createMesh(geom.geometry);
+        loadedMesh.position.x = -35;
+        loadedMesh.position.z = -5;
+        scene.add(loadedMesh);
+    }
+
+    //导出场景
+    var exporter1 = new THREE.SceneExporter();
+    var sceneJson = JSON.stringify(exporter1.parse(scene));
+    localStorage.setItem('scene',sceneJson);
+
+    //导入场景
+    var json1 = (localStorage.getItem('scene'));
+    var sceneLoader = new THREE.SceneLoader();
+    sceneLoader.parse(JSON.parse(json),function(e){
+        scene = e.scene;
+    },'.');
+
+
+    //加载模型，使用相对路径而不是绝对路径
+    var loader1 = new THREE.JSONLoader();
+    loader1.load('../assets/models/misc_chair01.js',function(geometry,mat){
+        mesh = new THREE.Mesh(geometry.mat[0]);
+        mesh.scale.x = 15;
+        mesh.scale.y = 15;
+        mesh.scale.z = 15;
+        scene.add(mesh);
+
+    },'../assets/models');
+
+    /**
+     * 加载STL、CTM、VTK模型
+     * 1) 在网页中包含[NameOfFormat]Loader.js
+     * 2) 使用[NameOfFormat]Loader.load() 函数
+     * 3) 检查一下传递给回调函数的返回结果，并对它进行渲染
+     */
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

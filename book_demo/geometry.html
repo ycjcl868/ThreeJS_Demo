@@ -56,6 +56,8 @@
     var stats = initStats();
     var axes = new THREE.AxisHelper(20);//坐标轴对象
 
+
+
     var planeGeometry = new THREE.PlaneGeometry(60,20,5,5);//创建平面   (width,height,widthSegments,heightSegments)  段数
     var planeMaterial = new THREE.MeshBasicMaterial({
         color:0xcccccc
@@ -99,6 +101,21 @@
         //wireframe:true
     });
     var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);//正方体
+
+    //创建文本
+    var options = {
+        size:90,
+        height:90,
+        weight:'normal',
+        font:'helvetiker',
+        style:'normal',
+        bevelThickness:2,
+        bevelSize:4,
+        bevelSegments:3,
+        bevelEnabled:true,
+        curveSegments:12,
+        steps:1
+    };
 
     var sphereGeometry = new THREE.SphereGeometry(4,20,20);
     var sphereMaterial = new THREE.MeshPhongMaterial({
